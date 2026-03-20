@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-    <title>SiDiMAS</title>
+    <title>Demo SiDiMAS</title>
     <link rel="icon" type="image/png" href="./imgsidimas.png">
 
 
@@ -338,9 +338,23 @@ input, button, select, textarea {
                   <div class="alert alert-warning border-warning shadow-sm mb-4"><div class="d-flex justify-content-between align-items-center"><div><i class="fas fa-database fa-lg me-2"></i><strong>Backup Database</strong><div class="small text-muted">Cadangkan data surat masuk, keluar, dan user ke Spreadsheet baru.</div></div><button id="btnBackup" class="btn btn-warning fw-bold" onclick="doBackup()"><span>Backup Sekarang</span><span class="spinner-border spinner-border-sm hide" role="status"></span></button></div></div>
                   <form onsubmit="simpanSetting(event)" autocomplete="off">
                       <h6 class="text-primary border-bottom pb-2">Identitas Sekolah</h6>
-                      <div class="row mb-2">
-                      <div class="col-md-6"><label class="text-success">Logo Instansi</label><input type="file" id="fLogo1" class="form-control" accept="image/*"></div>
-                      <div class="col-md-6"><label class="text-success">Logo Sekolah</label><input type="file" id="fLogo2" class="form-control" accept="image/*"></div></div>
+                      <h6 class="text-primary border-bottom pb-2">Identitas Sekolah</h6>
+<div class="row mb-2">
+    <div class="col-md-6">
+        <label class="text-success">Logo Instansi</label>
+        <input type="file" id="fLogo1" class="form-control" accept="image/*">
+        <div class="mt-2 text-center">
+            <img id="previewLogo1" class="img-thumbnail hide" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label class="text-success">Logo Sekolah</label>
+        <input type="file" id="fLogo2" class="form-control" accept="image/*">
+        <div class="mt-2 text-center">
+            <img id="previewLogo2" class="img-thumbnail hide" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+        </div>
+    </div>
+</div>
                       <div class="row mb-2">
                       <div class="col-md-6"><label class="text-success">Nama Instansi</label><input name="namaInstansi" id="inInstansi" class="form-control" placeholder="PEMERINTAH PROVINSI..."></div>
                       <div class="col-md-6"><label class="text-success">Nama Dinas/OPD (boleh dikosongkan)</label><input name="namaOpd" id="inOpd" class="form-control" placeholder="ex. DINAS PENDIDIKAN......"></div></div>
@@ -478,7 +492,7 @@ input, button, select, textarea {
   <script>
   /* --- KONFIGURASI API (URL DARI GOOGLE APPS SCRIPT) --- */
   // NANTI GANTI LINK DI BAWAH INI DENGAN LINK HASIL DEPLOY APPS SCRIPT KAMU
-  const API_URL = "https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycbzD6Op8G8YbyAJviwY4LnihchuiHWkFJt4JQ4ZydnnGDER3FEkncxRCqOa3Dqui6ebQ3w/exec"; 
+  const API_URL = "https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycbwEAXkKQrY_lZbkHOVOEy7_vjwWRf8XT1x6JrKVy0dI61ZiCTtBS8pXf96zSbS0DVTdDQ/exec"; 
 
 
   /* --- FUNGSI JEMBATAN PENGHUBUNG (FETCH API) --- */
@@ -509,7 +523,9 @@ input, button, select, textarea {
     const dateNow = new Date();
     const offset = dateNow.getTimezoneOffset() * 60000;
     const today = (new Date(dateNow - offset)).toISOString().slice(0, 10);
-    
+
+    $('#fLogo1').on('change', function() { cropImageSquare(this.files[0], '#previewLogo1'); });
+    $('#fLogo2').on('change', function() { cropImageSquare(this.files[0], '#previewLogo2'); });
     $('#filterM_Start, #filterM_End, #filterK_Start, #filterK_End, #inpTglSurat, #inpTglSaja').val(today);
     $('#selKodeArsip').select2({ theme: "bootstrap-5", width: '100%', dropdownParent: $('#formGen').parent() });
     $('#inpNoUrut').on('change blur', function() { formatNomorUrut(this); updatePreview(); });
@@ -699,10 +715,42 @@ input, button, select, textarea {
   function togglePass() { const x=document.getElementById("p"); x.type=(x.type==="password")?"text":"password"; }
 
   /* --- FILE HANDLING --- */
-  function resizeImage(file) { 
-      return new Promise(res => { if(!file) res(null); const r=new FileReader(); r.onload=e=>{ const i=new Image(); i.onload=()=>{ const c=document.createElement('canvas'); const s=100/i.height; c.height=100; c.width=i.width*s; c.getContext('2d').drawImage(i,0,0,c.width,c.height); res(c.toDataURL('image/png',0.8)); }; i.src=e.target.result; }; r.readAsDataURL(file); }); 
-  }
-  
+ /* --- FUNGSI CROP GAMBAR 1:1 & PREVIEW --- */
+function cropImageSquare(file, previewId) { 
+    return new Promise(res => { 
+        if(!file) { res(null); return; } 
+        const r = new FileReader(); 
+        r.onload = e => { 
+            const i = new Image(); 
+            i.onload = () => { 
+                const canvas = document.createElement('canvas'); 
+                // Cari sisi terpendek untuk rasio 1:1 sempurna
+                const size = Math.min(i.width, i.height); 
+                // Titik mulai crop agar gambar diambil dari tengah
+                const startX = (i.width - size) / 2; 
+                const startY = (i.height - size) / 2; 
+                
+                canvas.width = 150; canvas.height = 150; 
+                const ctx = canvas.getContext('2d');
+                // Beri background putih jika logo transparan (PNG) agar tidak hitam
+                ctx.fillStyle = "#ffffff"; 
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Potong dan tempel ke canvas
+                ctx.drawImage(i, startX, startY, size, size, 0, 0, canvas.width, canvas.height); 
+                
+                const b64 = canvas.toDataURL('image/png', 0.9); 
+                
+                // Tampilkan ke elemen preview jika ID diberikan
+                if(previewId) { $(previewId).attr('src', b64).removeClass('hide').show(); }
+                res(b64); 
+            }; 
+            i.src = e.target.result; 
+        }; 
+        r.readAsDataURL(file); 
+    }); 
+}
+
   function compressImageForUpload(file) {
       return new Promise(res => {
           if (!file) res(null);
@@ -736,18 +784,21 @@ input, button, select, textarea {
   }
 
   function simpanSetting(e) { 
-      e.preventDefault(); showLoadingTimer('Menyimpan Pengaturan...'); 
-      Promise.all([resizeImage(document.getElementById('fLogo1').files[0]), resizeImage(document.getElementById('fLogo2').files[0])]).then(imgs=>{ 
-          const fd=new FormData(e.target); const d=Object.fromEntries(fd); 
-          if(imgs[0]) d.b64_instansi=imgs[0]; if(imgs[1]) d.b64_sekolah=imgs[1]; 
-          
-          apiCall('saveSettings', d).then(r => {
-             Swal.close(); 
-             if(r && r.success === false) { Swal.fire('Error', r.message, 'error'); } 
-             else { Swal.fire('Sukses', 'Pengaturan diterapkan', 'success'); loadInitData(); } 
-          }); 
-      }); 
-  }
+    e.preventDefault(); showLoadingTimer('Menyimpan Pengaturan...'); 
+    // GANTI resizeImage MENJADI cropImageSquare
+    Promise.all([cropImageSquare(document.getElementById('fLogo1').files[0]), cropImageSquare(document.getElementById('fLogo2').files[0])]).then(imgs=>{ 
+        const fd=new FormData(e.target); const d=Object.fromEntries(fd); 
+        if(imgs[0]) d.b64_instansi=imgs[0]; if(imgs[1]) d.b64_sekolah=imgs[1]; 
+        
+        apiCall('saveSettings', d).then(r => {
+            Swal.close(); 
+            if(r && r.success === false) { Swal.fire('Error', r.message, 'error'); } 
+            else { Swal.fire('Sukses', 'Pengaturan diterapkan', 'success'); loadInitData(); } 
+        }); 
+    }); 
+}
+
+
   function doBackup() {
      Swal.fire({ title: 'Backup Database?', text: "Data akan disalin ke Spreadsheet baru di folder Arsip.", icon: 'info', showCancelButton: true, confirmButtonText: 'Ya, Backup', cancelButtonText: 'Batal' }).then((result) => {
         if (result.isConfirmed) {
