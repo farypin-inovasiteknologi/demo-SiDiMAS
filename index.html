@@ -295,6 +295,57 @@ input, button, select, textarea {
                         <div class="mb-2"><label>Melaksanakan Tugas Sebagai</label><textarea name="spmtJabatanBaru" class="form-control" rows="2"></textarea></div>
                         <div class="row mb-2"><div class="col-6"><label>TMT (Tanggal Mulai)</label><input type="date" name="spmtTglMulai" class="form-control"></div><div class="col-6"><label>Sampai Tanggal</label><input type="date" name="spmtTglSelesai" class="form-control"></div></div>
                      </div>
+                    <div id="box-lampiran" class="form-box hide">
+                        <div class="form-check form-switch mb-3 p-3 bg-warning bg-opacity-10 border rounded">
+                            <input class="form-check-input ms-0 me-2" type="checkbox" name="tanpaKop" id="inTanpaKop" value="ya">
+                            <label class="form-check-label fw-bold text-danger" for="inTanpaKop">Sembunyikan Kop Surat (Cetak Tanpa Kop)</label>
+                        </div>
+                        
+                        <div class="row mb-2">
+                            <div class="col-md-12">
+                                <label class="fw-bold text-primary">Orientasi Halaman</label>
+                                <select name="orientasiHalaman" class="form-select border-primary">
+                                    <option value="portrait">Portrait (Berdiri)</option>
+                                    <option value="landscape" selected>Landscape (Mendatar)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-2">
+                            <div class="col-md-6"><label>Hal / Perihal Lampiran</label><input name="perihal" class="form-control" placeholder="Lampiran Data Peserta..."></div>
+                            <div class="col-md-6"><label>Judul Tabel</label><input name="judulTabel" class="form-control" placeholder="DAFTAR NAMA PESERTA KEGIATAN..."></div>
+                        </div>
+                        
+                        <div class="card p-3 bg-light border-0">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <b class="text-primary d-block">Isi Data Tabel:</b>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="addColLampiran()"><i class="fas fa-columns"></i> + Kolom</button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" onclick="addRowLampiran()"><i class="fas fa-list"></i> + Baris</button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm bg-white mb-0" id="tblDynamicLampiran">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><input type="text" class="form-control form-control-sm text-center fw-bold" value="No"></th>
+                                            <th><input type="text" class="form-control form-control-sm fw-bold" value="Nama"></th>
+                                            <th><input type="text" class="form-control form-control-sm fw-bold" value="Keterangan"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="text" class="form-control form-control-sm text-center" value="1"></td>
+                                            <td><input type="text" class="form-control form-control-sm"></td>
+                                            <td><input type="text" class="form-control form-control-sm"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="form-text text-danger mt-1 small"><i class="fas fa-info-circle"></i> Kosongkan input jika ada baris/kolom yang tidak ingin dimasukkan ke dokumen.</div>
+                            <input type="hidden" name="dataTabelLampiran" id="dataTabelLampiran">
+                        </div>
+                     </div>
 
                      <h6 class="text-secondary border-bottom pb-2 mt-4">3. Penandatangan</h6>
                      <div class="row mb-4">
@@ -503,7 +554,7 @@ input, button, select, textarea {
   // Tambahkan daftar sekolah di sini. Kunci (sebelah kiri) harus huruf KECIL semua.
   // Cara aksesnya nanti: domain.github.io/sidimas/?id=demo atau ?id=sman1
   const DAFTAR_BACKEND = {
-      "demo": "https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycbw9VsFQ6H7nmX9mRqYp0q8q9VuQ5X-5FxXR1L2jS8QJiNzb3O_w5p4_K3lC96SMlAnZ/exec",
+      "demo": "https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycbx_hPGnUTJOwS6QMyaqmaBPpxFcIJjRedbkuTcYhOyHG60pIWfmid0fSgDGnPnXV8_k/exec",
       "smkn1kotaternate": "https://script.google.com/macros/s/LINK_GAS_SMAN_1/exec",
       "sman9kotajambi": "https://script.google.com/macros/s/LINK_GAS_DISDIK/exec"
   };
@@ -932,7 +983,7 @@ function cropImageSquare(file, previewId) {
   const t = $('#pilihJenisSurat option:selected').text().toLowerCase() || ""; 
   $('.form-box').addClass('hide').find('input,textarea,select').prop('disabled', true); 
   let aid = '#box-umum'; 
-  if (t.includes('melaksanakan tugas') || t.includes('spmt') || t.includes('skmt')) { aid = '#box-spmt'; } else if (t.includes('keterangan siswa') || t.includes('siswa')) { aid = '#box-sis'; } else if (t.includes('tugas') || t.includes('spt')) { aid = '#box-spt'; } else if (t.includes('sk') || t.includes('keputusan')) { aid = '#box-sk'; } else if (t.includes('perjalanan')) { aid = '#box-sppd'; } else if (t.includes('surat izin') || t.includes('izin')) { aid = '#box-izin'; } else if (t.includes('keterangan')) { aid = '#box-suket'; } else if (t.includes('nota')) { aid = '#box-nota'; } else if (t.includes('pengantar')) { aid = '#box-pengantar'; } else if (t.includes('undangan')) { aid = '#box-undangan'; }
+  if (t.includes('melaksanakan tugas') || t.includes('spmt') || t.includes('skmt')) { aid = '#box-spmt'; } else if (t.includes('keterangan siswa') || t.includes('siswa')) { aid = '#box-sis'; } else if (t.includes('tugas') || t.includes('spt')) { aid = '#box-spt'; } else if (t.includes('sk') || t.includes('keputusan')) { aid = '#box-sk'; } else if (t.includes('perjalanan')) { aid = '#box-sppd'; } else if (t.includes('surat izin') || t.includes('izin')) { aid = '#box-izin'; } else if (t.includes('keterangan')) { aid = '#box-suket'; } else if (t.includes('nota')) { aid = '#box-nota'; } else if (t.includes('pengantar')) { aid = '#box-pengantar'; } else if (t.includes('undangan')) { aid = '#box-undangan'; } else if (t.includes('lampiran')) { aid = '#box-lampiran'; }
   $(aid).removeClass('hide').find('input,textarea,select').prop('disabled', false); 
   
   // Logika memunculkan Tembusan untuk jenis surat tertentu
@@ -942,6 +993,7 @@ function cropImageSquare(file, previewId) {
   } else {
       $('#box-tembusan').addClass('hide').find('textarea').prop('disabled', true);
   }
+  
 
   loadAutoNumber();
 }
@@ -962,6 +1014,25 @@ function cropImageSquare(file, previewId) {
     updatePreview(); updateTanggalSurat(); updateTanggalSaja(); updateHariAcara(); 
     const fd = new FormData(e.target); const dataObj = Object.fromEntries(fd); 
     
+    // Baca tabel dinamis jika form box-lampiran sedang aktif
+    if(!$('#box-lampiran').hasClass('hide')) {
+        let tableData = [];
+        
+        // Ambil data Header
+        let headers = [];
+        $('#tblDynamicLampiran thead input').each(function(){ headers.push($(this).val()); });
+        tableData.push(headers);
+        
+        // Ambil data Baris
+        $('#tblDynamicLampiran tbody tr').each(function(){
+            let row = [];
+            $(this).find('input').each(function(){ row.push($(this).val()); });
+            tableData.push(row);
+        });
+        
+        // Simpan ke object data yang akan dikirim ke backend
+        dataObj.dataTabelLampiran = JSON.stringify(tableData);
+    }
     // --- INI BARIS TAMBAHANNYA ---
     showLoadingTimer2('Membuat Dokumen...');
 
@@ -984,6 +1055,30 @@ function cropImageSquare(file, previewId) {
            Swal.fire('Error', err.toString(), 'error'); 
        }); 
 }
+
+/* --- FUNGSI TABEL DINAMIS UNTUK LAMPIRAN --- */
+  function addColLampiran() {
+      $('#tblDynamicLampiran thead tr').append('<th><input type="text" class="form-control form-control-sm fw-bold" placeholder="Header Baru"></th>');
+      $('#tblDynamicLampiran tbody tr').each(function() {
+          $(this).append('<td><input type="text" class="form-control form-control-sm"></td>');
+      });
+  }
+
+  function addRowLampiran() {
+      let cols = $('#tblDynamicLampiran thead th').length;
+      let tr = '<tr>';
+      let rowCount = $('#tblDynamicLampiran tbody tr').length + 1;
+      for(let i=0; i<cols; i++) { 
+          if(i === 0) {
+              tr += `<td><input type="text" class="form-control form-control-sm text-center" value="${rowCount}"></td>`;
+          } else {
+              tr += '<td><input type="text" class="form-control form-control-sm"></td>'; 
+          }
+      }
+      tr += '</tr>';
+      $('#tblDynamicLampiran tbody').append(tr);
+  }
+
 
   function resetGenerator() { $('#formGen')[0].reset(); $('#hasilGenerate').addClass('hide'); $('#selKodeArsip').val('').trigger('change'); const dateNow = new Date(); const offset = dateNow.getTimezoneOffset() * 60000; const today = (new Date(dateNow - offset)).toISOString().slice(0, 10); $('#inpTglSurat').val(today); gantiFormSurat(); updatePreview(); $('html,body').animate({scrollTop:0},500); }
 
