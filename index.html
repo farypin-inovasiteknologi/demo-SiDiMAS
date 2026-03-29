@@ -44,38 +44,83 @@ input, button, select, textarea {
 
     .hide { display: none !important; }
     
-    #view-login { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--main-color) 0%, #004085 100%); padding: 20px; overflow-y: auto; }
+    /* Background utama kita buat lebih hidup dengan animasi gradien bergerak halus */
+    #view-login { 
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9000; 
+        display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        /* Gradien biru ke ungu elegan */
+        background: linear-gradient(-45deg, var(--main-color), #6610f2, #0dcaf0, #004085);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        padding: 20px; overflow-y: auto; 
+    }
+
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* WRAPPER UTAMA: Efek Kaca (Glassmorphism) tingkat tinggi */
+    .login-wrapper { 
+        display: flex; width: 100%; max-width: 900px; 
+        background: rgba(255, 255, 255, 0.15); /* Transparan */
+        backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); /* Efek Buram */
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 24px; 
+        box-shadow: 0 30px 60px rgba(0,0,0,0.3); 
+        overflow: hidden; align-items: stretch; 
+    }
+
+    .login-box { padding: 45px; text-align: center; display: flex; flex-direction: column; justify-content: center; flex: 1; z-index: 2; position: relative; }
+
+    /* KOTAK KIRI: Warna pastel lembut, estetik, dan transparan */
+    .login-box-left { 
+        /* Gradien dari putih ke biru muda/ungu muda yang sangat soft */
+        background: linear-gradient(135deg, rgba(224, 234, 252, 0.75) 0%, rgba(207, 222, 243, 0.85) 100%); 
+        border-right: 1px solid rgba(255, 255, 255, 0.5); 
+    }
     
-    /* --- CSS BARU UNTUK KOTAK KEMBAR LOGIN --- */
-    .login-wrapper { display: flex; width: 100%; max-width: 850px; background: rgba(255, 255, 255, 0.95); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden; align-items: stretch; }
-    .login-box { padding: 40px; text-align: center; display: flex; flex-direction: column; justify-content: center; flex: 1; }
-    .login-box-left { background: rgba(240, 242, 245, 0.6); border-right: 1px solid #dee2e6; }
-    .login-box-right { background: #ffffff; }
-    
-    .login-logo { height: 70px; object-fit: contain; margin: 0 10px; }
-    .login-instansi { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; color: #666; letter-spacing: 1px; margin-top: 10px;}
-    .login-opd { font-size: 0.95rem; font-weight: 700; text-transform: uppercase; color: #444; letter-spacing: 1px; margin-top: 2px;}
-    .login-sekolah { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; color: var(--main-color); margin-bottom: 15px; }
-    .login-logo2 { height: 80px; object-fit: center; margin: 0 0px; }
-    
+    /* Tambahan efek pendaran cahaya (Glow) di sudut kotak kiri biar cantik */
+    .login-box-left::before {
+        content: ''; position: absolute; top: -50px; left: -50px; width: 200px; height: 200px;
+        background: rgba(13, 110, 253, 0.25); border-radius: 50%; filter: blur(40px); z-index: -1;
+    }
+    .login-box-left::after {
+        content: ''; position: absolute; bottom: -50px; right: -50px; width: 200px; height: 200px;
+        background: rgba(102, 16, 242, 0.2); border-radius: 50%; filter: blur(40px); z-index: -1;
+    }
+
+    /* KOTAK KANAN: Putih mengkilap agar form sangat jelas dibaca */
+    .login-box-right { 
+        background: rgba(255, 255, 255, 0.95); 
+    }
+
+    /* Penyesuaian Teks & Logo agar serasi dengan background estetik */
+    .login-instansi { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: #4b5563; letter-spacing: 1px; margin-top: 15px;}
+    .login-opd { font-size: 0.95rem; font-weight: 800; text-transform: uppercase; color: #2d3748; letter-spacing: 1px; margin-top: 2px;}
+    .login-sekolah { font-size: 1.3rem; font-weight: 900; text-transform: uppercase; color: var(--main-color); margin-bottom: 15px; text-shadow: 0 2px 4px rgba(13, 110, 253, 0.15);}
+    .login-logo { height: 75px; object-fit: contain; margin: 0 10px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
+    .login-logo2 { height: 85px; object-fit: center; margin: 0; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
+
     /* Tombol Navigasi Khusus HP */
     .btn-mobile-next { display: none; }
-    .btn-mobile-back { display: none; margin-bottom: 20px; text-align: left; cursor: pointer; color: #666; font-weight: bold; font-size: 0.9rem;}
-    .btn-mobile-back:hover { color: var(--main-color); }
+    .btn-mobile-back { display: none; margin-bottom: 20px; text-align: left; cursor: pointer; color: #666; font-weight: bold; font-size: 0.9rem; transition: 0.2s;}
+    .btn-mobile-back:hover { color: var(--main-color); transform: translateX(-5px); }
 
     /* --- MEDIA QUERY KHUSUS HP --- */
     @media (max-width: 768px) { 
-        /* Pisahkan kotak kembar menjadi transparan di HP agar bisa diganti-ganti */
-        .login-wrapper { background: transparent; box-shadow: none; overflow: visible; flex-direction: column; padding: 0; }
+        /* Matikan efek kaca pembungkus utama di HP */
+        .login-wrapper { background: transparent; backdrop-filter: none; border: none; box-shadow: none; overflow: visible; flex-direction: column; padding: 0; }
         
-        /* Jadikan kotak masing-masing punya background sendiri */
-        .login-box { border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.2); background: rgba(255, 255, 255, 0.95); padding: 30px 20px; min-height: 400px;}
-        .login-box-left { border-right: none; }
+        .login-box { border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.25); padding: 35px 20px; min-height: 400px; }
         
-        /* Sembunyikan Kotak Kanan (Form Login) di awal */
-        .login-box-right { display: none; }
+        /* Di HP, kotak kiri warnanya solid pastel agar teks tetap terbaca bagus */
+        .login-box-left { border-right: none; background: linear-gradient(135deg, rgba(240, 245, 255, 0.98) 0%, rgba(225, 235, 250, 0.98) 100%); }
         
-        /* Tampilkan Tombol Lanjut & Kembali */
+        /* Kotak kanan (Form Login) putih solid */
+        .login-box-right { display: none; background: #ffffff; }
+        
         .btn-mobile-next { display: block; margin-top: 30px; }
         .btn-mobile-back { display: block; }
     }
@@ -170,7 +215,7 @@ input, button, select, textarea {
 
         <div class="mt-auto pt-4" style="font-size: 0.75rem; color: #6c757d;">
             &copy; 2026 SiDiMAS | <a href="javascript:void(0)" onclick="modalPrivasi()" class="text-decoration-none">Kebijakan Privasi</a>
-            <br><span style="font-size: 0.7rem;">Powered by: <a href='https://www.farypin-inovasiteknologi.com' target="_blank" style="color:white">PT Farypin Inovasi Teknologi</a></span>
+            <br><span style="font-size: 0.7rem;">Powered by: <a href='https://www.farypin-inovasiteknologi.com' target="_blank" style="color:blue">PT Farypin Inovasi Teknologi</a></span>
         </div>
       </div>
 
